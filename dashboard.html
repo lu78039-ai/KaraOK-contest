@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>即時排名 - 卡拉OK大賽</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <a href="index.html" style="text-decoration: none; font-size: 1.8rem;" title="返回首頁">🏠</a>
+                <h1>🏆 卡拉 OK 大賽即時排行榜</h1>
+            </div>
+            <div class="header-controls">
+                <button id="toggleRevealBtn" class="reveal-btn" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">👁️ 顯示排行</button>
+                <button id="revealBtn" class="reveal-btn">📢 公布名次</button>
+                <button id="refreshBtn" class="refresh-btn">🔄 重新整理</button>
+            </div>
+        </header>
+
+        <main class="split-dashboard">
+            <!-- 左側：前五名詳細排行榜 -->
+            <div class="winners-section">
+                <div id="winnersList" class="winners-list">
+                    <div class="loading">載入排名中...</div>
+                </div>
+            </div>
+
+            <!-- 中間：賽程清單 第一部分 -->
+            <div class="schedule-container">
+                <div id="scheduleList1" class="schedule-col"></div>
+            </div>
+
+            <!-- 右側：賽程清單 第二部分 -->
+            <div class="schedule-container">
+                <div id="scheduleList2" class="schedule-col"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>

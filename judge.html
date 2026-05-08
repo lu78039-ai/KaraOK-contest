@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>評審工作台 - 卡拉OK大賽</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 登入畫面 -->
+    <div id="loginSection" class="container">
+        <div class="login-box">
+            <h2>🔑 評審登入</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>評審姓名</label>
+                    <select id="username" required>
+                        <option value="">載入名單中...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>登入密碼</label>
+                    <input type="password" id="password" placeholder="請輸入密碼" required>
+                </div>
+                <button type="submit" class="submit-btn">登入系統</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 評審工作台 -->
+    <div id="judgeApp" class="judge-container hidden">
+        <header class="judge-header">
+            <div style="display:flex; align-items:center; gap:10px; flex: 1; min-width: 0;">
+                <button id="backToTeams" class="back-btn hidden">←</button>
+                <h2 id="viewTitle" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">今日比賽隊伍</h2>
+                <select id="scoringQuickJump" class="hidden" style="width: auto; flex: 0 1 250px; margin-left: auto; padding: 6px 12px; font-size: 0.9rem; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 6px; color: var(--primary-color); font-weight: 700; cursor: pointer; outline: none;">
+                    <option value="">切換隊伍...</option>
+                </select>
+            </div>
+            <div class="header-controls" id="judgeHeaderInfo" style="display: flex; align-items: center; gap: 2em; margin-left: 20px;">
+                <span id="currentJudgeDisplay" style="color: var(--text-main); font-size: 1.25rem; font-weight: 500;"></span>
+                <button id="logoutBtn" class="nav-btn" style="padding: 6px 16px; width: auto; font-size: 0.9rem; background: var(--border-color); border: 1px solid var(--border-color); color: var(--text-main); cursor: pointer; border-radius: 6px;">登出</button>
+            </div>
+        </header>
+
+        <!-- 視圖：隊伍清單 -->
+        <div id="teamListView" class="scores-table-container">
+            <table>
+                <thead>
+                    <tr id="teamListHeader">
+                        <th>序號 / 隊伍</th>
+                        <!-- 動態插入評分項目 -->
+                        <th>總分</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="teamListBody"></tbody>
+            </table>
+        </div>
+
+        <!-- 視圖：評分表 -->
+        <div id="scoringView" class="hidden">
+            <form id="scoreForm" class="score-form">
+                <div class="criteria-grid" id="criteriaGrid"></div>
+                <div class="scoring-footer">
+                    <div class="total-preview">
+                        <h3>加權總分</h3>
+                        <span id="previewTotal">0</span>
+                    </div>
+                    <button type="submit" class="submit-btn" id="submitBtn">送出評分</button>
+                </div>
+            </form>
+        </div>
+
+
+    </div>
+    
+    <div id="toast" class="toast"></div>
+
+    <script src="config.js"></script>
+    <script src="judge.js"></script>
+</body>
+</html>

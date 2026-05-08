@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>參賽報名 - 卡拉 OK 大賽</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="config.js"></script>
+</head>
+<body>
+    <div class="register-container">
+        <div id="statusBanner" class="status-banner hidden"></div>
+
+        <!-- 報名表單 -->
+        <div id="registerBox" class="register-box">
+            <header>
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                    <a href="index.html" style="text-decoration: none; font-size: 1.5rem;" title="返回首頁">🏠</a>
+                    <h2 style="margin: 0; flex: 1;">參賽報名</h2>
+                </div>
+                <p>請填寫以下資訊完成比賽登記</p>
+            </header>
+
+            <form id="registerForm">
+                <div class="form-group" style="grid-column: span 2;">
+                    <label>參賽者名單 (每位成員皆需填寫班級座號)</label>
+                    <div id="membersContainer">
+                        <!-- 第一位成員固定為組長 -->
+                        <div class="member-input-row" style="display:grid; grid-template-columns: 0.8fr 0.8fr 1.2fr 40px; gap:8px; margin-bottom:8px;">
+                            <input type="text" class="m-class" placeholder="班級" required>
+                            <input type="number" class="m-seat" placeholder="座號" required>
+                            <input type="text" class="m-name" placeholder="姓名" required>
+                            <div style="width:40px;"></div> <!-- 佔位符，保持對齊 -->
+                        </div>
+                    </div>
+                    <button type="button" id="addMemberBtn" class="nav-btn" style="width:auto; padding:8px 16px; margin-top:4px;">＋ 新增成員</button>
+                </div>
+
+                <div class="form-group">
+                    <label for="teamName">隊伍名稱</label>
+                    <input type="text" id="teamName" name="teamName" placeholder="為您的隊伍取個響亮的名稱" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="song">參賽曲目</label>
+                    <input type="text" id="song" name="song" placeholder="請輸入完整的歌曲名稱" required>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <button type="button" id="previewBtn" class="submit-btn">預覽報名資訊</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- 預覽確認畫面 -->
+        <div id="previewScreen" class="register-box hidden">
+            <h2 style="background:none; -webkit-text-fill-color: var(--primary-color); color: var(--primary-color);">確認報名資訊</h2>
+            <p>請再次確認以下資訊是否正確</p>
+            
+            <div class="preview-details" style="background:rgba(0,0,0,0.2); padding:20px; border-radius:12px; margin-bottom:24px; text-align:left;">
+                <div style="margin-bottom:12px;"><span style="color:var(--text-muted);">隊名：</span><span id="p-team" style="font-weight:bold;"></span></div>
+                <div style="margin-bottom:12px;"><span style="color:var(--text-muted);">曲目：</span><span id="p-song" style="font-weight:bold;"></span></div>
+                <div style="border-top:1px solid rgba(255,255,255,0.1); padding-top:10px; margin-top:10px;">
+                    <div style="color:var(--text-muted); margin-bottom:8px;">成員明細：</div>
+                    <div id="p-members-list" style="font-size:0.9rem;"></div>
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <button type="button" onclick="closePreview()" class="nav-btn" style="padding:16px;">返回修改</button>
+                <button type="button" id="confirmSubmitBtn" class="submit-btn">確認送出報名</button>
+            </div>
+        </div>
+
+        <!-- 報名成功畫面 -->
+        <div id="successScreen" class="register-box success-screen hidden">
+            <div class="success-icon">✅</div>
+            <h2>報名成功！</h2>
+            <p>您的資料已成功寫入系統，請記下報名序號：</p>
+            <div id="regIdDisplay" class="reg-id-badge">000</div>
+            <p style="font-size: 0.9rem; color:var(--text-muted);">註：出場序將於報名截止後統一公告。</p>
+            <div style="margin-top: 30px;">
+                <button onclick="location.reload()" class="submit-btn" style="background:var(--surface-color); border:1px solid var(--border-color); margin-bottom:10px;">繼續報名下一組</button>
+            </div>
+        </div>
+
+        <!-- 報名截止畫面 -->
+        <div id="closedScreen" class="register-box hidden">
+            <div style="text-align:center; padding: 40px;">
+                <div style="font-size:5rem; margin-bottom:20px;">⏰</div>
+                <h2 style="background:none; -webkit-text-fill-color: var(--danger-color); color: var(--danger-color);">報名已截止</h2>
+                <p>很抱歉，本屆賽事報名時間已結束。</p>
+                <div id="deadlineInfo" style="margin: 20px 0; color: var(--text-muted);"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', checkStatus);
+
+        // 新增成員欄位
+        document.getElementById('addMemberBtn').addEventListener('click', () => {
+            const container = document.getElementById('membersContainer');
+            const div = document.createElement('div');
+            div.className = 'member-input-row';
+            div.style.cssText = 'display:grid; grid-template-columns: 0.8fr 0.8fr 1.2fr 40px; gap:8px; margin-bottom:8px;';
+            div.innerHTML = `
+                <input type="text" class="m-class" placeholder="班級" required>
+                <input type="number" class="m-seat" placeholder="座號" required>
+                <input type="text" class="m-name" placeholder="姓名" required>
+                <button type="button" class="nav-btn" style="width:auto; padding:0; color:var(--danger-color); font-size:1.2rem;" onclick="this.parentElement.remove()">✕</button>
+            `;
+            container.appendChild(div);
+        });
+
+        async function checkStatus() {
+            try {
+                const res = await fetch(`${GAS_API_URL}?action=getRegistrationStatus`);
+                const data = await res.json();
+                
+                const banner = document.getElementById('statusBanner');
+                if (data.isOpen) {
+                    banner.textContent = `🟢 報名進行中 (截止時間：${data.deadline})`;
+                    banner.className = 'status-banner status-open';
+                } else {
+                    document.getElementById('registerBox').classList.add('hidden');
+                    document.getElementById('closedScreen').classList.remove('hidden');
+                    document.getElementById('deadlineInfo').textContent = `截止時間：${data.deadline}`;
+                    banner.textContent = `🔴 報名已截止`;
+                    banner.className = 'status-banner status-closed';
+                }
+                banner.classList.remove('hidden');
+            } catch (e) {
+                showToast("無法取得報名狀態", true);
+            }
+        }
+
+        function closePreview() {
+            document.getElementById('previewScreen').classList.add('hidden');
+            document.getElementById('registerBox').classList.remove('hidden');
+        }
+
+        // 預覽按鈕邏輯
+        document.getElementById('previewBtn').addEventListener('click', () => {
+            const form = document.getElementById('registerForm');
+            if (!form.reportValidity()) return;
+
+            const members = Array.from(document.querySelectorAll('.member-input-row')).map(row => ({
+                class: row.querySelector('.m-class').value,
+                seat: row.querySelector('.m-seat').value,
+                name: row.querySelector('.m-name').value
+            }));
+            
+            document.getElementById('p-team').textContent = document.getElementById('teamName').value;
+            document.getElementById('p-song').textContent = document.getElementById('song').value;
+            
+            const listHtml = members.map(m => `<div>${m.class}班 ${m.seat}號 ${m.name}</div>`).join('');
+            document.getElementById('p-members-list').innerHTML = listHtml;
+
+            document.getElementById('registerBox').classList.add('hidden');
+            document.getElementById('previewScreen').classList.remove('hidden');
+        });
+
+        // 最終提交按鈕邏輯
+        document.getElementById('confirmSubmitBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('confirmSubmitBtn');
+            btn.disabled = true;
+            btn.textContent = '寫入中...';
+
+            const members = Array.from(document.querySelectorAll('.member-input-row')).map(row => ({
+                class: row.querySelector('.m-class').value,
+                seat: row.querySelector('.m-seat').value,
+                name: row.querySelector('.m-name').value
+            }));
+
+            const payload = {
+                action: 'register',
+                teamName: document.getElementById('teamName').value,
+                song: document.getElementById('song').value,
+                members: members
+            };
+
+            try {
+                const response = await fetch(GAS_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    document.getElementById('previewScreen').classList.add('hidden');
+                    document.getElementById('successScreen').classList.remove('hidden');
+                    document.getElementById('regIdDisplay').textContent = String(result.regId).padStart(3, '0');
+                } else {
+                    showToast("報名失敗：" + result.message, true);
+                    btn.disabled = false;
+                    btn.textContent = '確認送出報名';
+                }
+            } catch (error) {
+                showToast("伺服器連線失敗", true);
+                btn.disabled = false;
+                btn.textContent = '確認送出報名';
+            }
+        });
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast show ${isError ? 'error' : ''}`;
+            setTimeout(() => toast.className = 'toast', 3000);
+        }
+    </script>
+</body>
+</html>

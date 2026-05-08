@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>報名管理系統 - 卡拉ok評分表</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background-color: #1a1c23 !important;
+            color: #e2e8f0 !important;
+            font-family: 'Inter', 'Noto Sans TC', sans-serif !important;
+            margin: 0 !important;
+            padding: 20px !important;
+            overflow: auto !important;
+            height: auto !important;
+            display: block !important;
+        }
+        .admin-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            background: #2d3748;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            /* 移除可能限制高度的設定 */
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #4a5568;
+            padding-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: #63b3ed;
+        }
+        .controls {
+            display: flex;
+            gap: 12px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary { background: #3182ce; color: white; }
+        .btn-primary:hover { background: #2b6cb0; }
+        .btn-success { background: #38a169; color: white; }
+        .btn-success:hover { background: #2f855a; }
+        .btn-warning { background: #d69e2e; color: white; }
+        .btn-warning:hover { background: #b7791f; }
+        .btn-info { background: #4fd1c5; color: #1a202c; }
+        .btn-info:hover { background: #38b2ac; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th {
+            background: #4a5568;
+            color: #edf2f7;
+            text-align: left;
+            padding: 12px;
+            font-weight: 600;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #4a5568;
+        }
+        tr:hover {
+            background: #3a4659;
+        }
+        .order-input {
+            width: 60px;
+            background: #1a202c;
+            border: 1px solid #4a5568;
+            color: white;
+            padding: 6px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .move-btn {
+            background: #4a5568;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-right: 4px;
+        }
+        .move-btn:hover { background: #718096; }
+        
+        .member-tag {
+            display: inline-block;
+            background: #2c5282;
+            color: #ebf8ff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin: 2px;
+            font-size: 0.85rem;
+        }
+
+        /* 列印樣式 */
+        @media print {
+            body { background: white; color: black; padding: 0; }
+            .admin-container { box-shadow: none; margin: 0; padding: 0; max-width: 100%; width: 100%; }
+            .controls, .move-btn, .order-input { display: none !important; }
+            .admin-container { background: white; }
+            th { background: #eee !important; color: black !important; border: 1px solid #ccc; }
+            td { border: 1px solid #ccc; color: black !important; }
+            /* 置中出場序與報名序號 */
+            th:nth-child(1), td:nth-child(1),
+            th:nth-child(2), td:nth-child(2) {
+                text-align: center !important;
+            }
+            .member-tag { background: none; color: black; border: 1px solid #ddd; }
+            h1 { color: black !important; text-align: center; margin-bottom: 20px; }
+            .print-only-order { display: block !important; }
+        }
+        .print-only-order { display: none; text-align: center; font-weight: bold; }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #4a5568;
+            border-top: 5px solid #63b3ed;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .toast.show { opacity: 1; }
+        .toast-success { background: #38a169; }
+        .toast-error { background: #e53e3e; }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="header">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <a href="index.html" style="text-decoration: none; font-size: 1.5rem;" title="返回首頁">🏠</a>
+                <h1>🛡️ 報名隊伍管理</h1>
+            </div>
+            <div class="controls">
+                <button id="lotteryBtn" class="btn btn-warning">🎲 隨機抽籤</button>
+                <button id="sortByOrderBtn" class="btn btn-info">📋 依出場序</button>
+                <button id="sortRegIdBtn" class="btn btn-primary">🔢 依報名序</button>
+                <button id="printBtn" class="btn btn-info">🖨️ 列印表單</button>
+                <button id="saveBtn" class="btn btn-success">💾 儲存變更</button>
+                <button id="refreshBtn" class="btn btn-primary">🔄 刷新</button>
+            </div>
+        </div>
+
+        <div id="tableContainer">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 140px;">出場序 / 調整</th>
+                        <th style="width: 80px;">報名序號</th>
+                        <th>隊伍名稱 / 曲目</th>
+                        <th>參賽成員 (班級/座號/姓名)</th>
+                    </tr>
+                </thead>
+                <tbody id="adminBody">
+                    <!-- Data injected here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="config.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

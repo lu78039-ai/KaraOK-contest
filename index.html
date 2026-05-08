@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卡拉OK大賽評分系統</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>卡拉 OK 大賽評分系統</h1>
+            <p>請選擇您要進入的系統模式</p>
+        </header>
+        
+        <div class="menu-grid" style="grid-template-columns: repeat(4, 1fr); max-width: 1200px; margin: 0 auto; gap: 20px;">
+            <a href="register.html" class="menu-card register-card" style="border-top: 4px solid #ed64a6;">
+                <div class="icon">📝</div>
+                <h2>隊伍報名</h2>
+                <p>參賽隊伍註冊與曲目登記</p>
+            </a>
+            <a href="judge.html" class="menu-card judge-card">
+                <div class="icon">⚖️</div>
+                <h2>評審評分</h2>
+                <p>評審員登入並進行即時評分</p>
+            </a>
+            <a href="dashboard.html" class="menu-card dashboard-card">
+                <div class="icon">📊</div>
+                <h2>成績看板</h2>
+                <p>即時排名與名次公佈</p>
+            </a>
+            <a href="admin.html" class="menu-card admin-card" style="border-top: 4px solid #f6ad55;">
+                <div class="icon">🛡️</div>
+                <h2>管理系統</h2>
+                <p>抽籤、出場序調整與報名管理</p>
+            </a>
+        </div>
+        <div style="margin-top: 30px;">
+            <a href="report.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem;">➡️ 查看總成績結算表</a>
+        </div>
+    </div>
+</body>
+</html>
