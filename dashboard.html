@@ -43,5 +43,9 @@
 
     <script src="config.js"></script>
     <script src="dashboard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', initDashboard);
+        function showView(viewId) { if (viewId === 'homeView') location.href = 'index.html'; }
+    </script>
 </body>
 </html>

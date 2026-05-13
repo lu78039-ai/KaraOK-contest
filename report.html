@@ -114,7 +114,7 @@
             <p id="printDate"></p>
         </div>
 
-        <div id="loading">正在彙整成績資料...</div>
+        <div id="loadingReport">正在彙整成績資料...</div>
         
         <div id="tableWrapper" class="hidden">
             <table id="reportTable">
@@ -131,5 +131,9 @@
     </div>
 
     <script src="report.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', initReport);
+        function showView(viewId) { if (viewId === 'homeView') location.href = 'index.html'; }
+    </script>
 </body>
 </html>

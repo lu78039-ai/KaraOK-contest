@@ -1,15 +1,15 @@
 let currentAdminData = [];
 
-document.addEventListener('DOMContentLoaded', () => {
+function initAdmin() {
     fetchAdminData();
 
-    document.getElementById('refreshBtn').addEventListener('click', fetchAdminData);
-    document.getElementById('lotteryBtn').addEventListener('click', handleLottery);
-    document.getElementById('sortByOrderBtn').addEventListener('click', sortByOrder);
-    document.getElementById('sortRegIdBtn').addEventListener('click', sortByRegId);
-    document.getElementById('saveBtn').addEventListener('click', saveOrders);
-    document.getElementById('printBtn').addEventListener('click', () => window.print());
-});
+    document.getElementById('refreshBtn').onclick = fetchAdminData;
+    document.getElementById('lotteryBtn').onclick = handleLottery;
+    document.getElementById('sortByOrderBtn').onclick = sortByOrder;
+    document.getElementById('sortRegIdBtn').onclick = sortByRegId;
+    document.getElementById('saveBtn').onclick = saveOrders;
+    document.getElementById('printBtn').onclick = () => window.print();
+}
 
 async function fetchAdminData() {
     showLoading(true);
@@ -40,23 +40,29 @@ function renderAdminTable(data) {
         ).join(' ');
 
         tr.innerHTML = `
-            <td>
-                <div style="display:flex; align-items:center;">
-                    <div class="print-only-order">${team.order}</div>
-                    <input type="number" class="order-input" value="${team.order}" 
-                        data-regid="${team.regId}" data-index="${index}" min="1">
-                    <div style="margin-left:10px;">
-                        <button class="move-btn" onclick="moveTeam(${index}, -1)">▲</button>
-                        <button class="move-btn" onclick="moveTeam(${index}, 1)">▼</button>
+            <td style="text-align: center;">
+                <div style="display:flex; align-items:center; gap: 15px; justify-content: center;">
+                    <span style="font-weight: 800; font-size: 1.2rem; color: #fff; min-width: 30px;">${team.order}</span>
+                    <div class="hide-print" style="display:flex; align-items:center; gap: 8px;">
+                        <input type="number" class="order-input" value="${team.order}" 
+                            style="color: #ffffff !important; font-weight: bold; background: #1a202c; width: 60px; text-align: center; border: 1px solid #4a5568; border-radius: 4px;"
+                            data-regid="${team.regId}" data-index="${index}" min="1">
+                        <div style="display: flex; flex-direction: column; gap: 2px;">
+                            <button class="move-btn" onclick="moveTeam(${index}, -1)" title="上移" style="padding: 2px 6px; font-size: 0.7rem;">▲</button>
+                            <button class="move-btn" onclick="moveTeam(${index}, 1)" title="下移" style="padding: 2px 6px; font-size: 0.7rem;">▼</button>
+                        </div>
                     </div>
                 </div>
             </td>
-            <td>${team.regId}</td>
+            <td style="text-align: center; font-weight: bold; color: #cbd5e0;">${team.regId}</td>
             <td>
-                <div style="font-weight:700;">${team.teamName}</div>
-                <div style="font-size:0.85rem; color:#a0aec0;">🎵 ${team.song || '未指定'}</div>
+                <div style="font-weight:700; color: #fff;">${team.teamName}</div>
+                <div style="font-size:0.85rem; color:#a0aec0; display: flex; align-items: center; gap: 6px;">
+                    <span>🎵 ${team.song || '未指定'}</span>
+                    ${team.videoUrl ? `<a href="${team.videoUrl}" target="_blank" title="查看影片" style="text-decoration:none; color:#63b3ed; font-size:1rem;">🔗</a>` : ''}
+                </div>
             </td>
-            <td>${memberHtml}</td>
+            <td><div style="display: flex; flex-wrap: wrap; gap: 6px;">${memberHtml}</div></td>
         `;
         body.appendChild(tr);
     });

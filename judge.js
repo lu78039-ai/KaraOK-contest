@@ -4,10 +4,13 @@ let loggedInJudge = null;
 let currentTeam = null;
 let currentTeamObj = null;
 
-document.addEventListener('DOMContentLoaded', () => {
+function initJudge() {
     checkLogin();
     setupCoreEvents();
-});
+}
+
+// Remove the automatic listener as it will be handled by the SPA router
+// document.addEventListener('DOMContentLoaded', () => { ... });
 
 async function checkLogin() {
     const savedJudge = localStorage.getItem('karaoke_judge');
@@ -121,7 +124,7 @@ function switchView(viewName) {
     } else if (viewName === 'scoring') {
         scoringQuickJump.classList.remove('hidden');
         
-        const order = currentTeamObj ? `[序號 ${currentTeamObj.order}] ` : '';
+        const order = currentTeamObj ? `[出場序 ${currentTeamObj.order}] ` : '';
         const song = currentTeamObj?.song ? ` - 《${currentTeamObj.song}》` : '';
         document.getElementById('viewTitle').textContent = `${order}${currentTeam}${song}`;
     }
@@ -144,7 +147,7 @@ async function renderTeamList() {
         const scoredData = await res.json();
         
         // Header
-        header.innerHTML = '<th>序號 / 隊伍</th>';
+        header.innerHTML = '<th>出場序 / 隊伍</th>';
         currentSettings.forEach(s => {
             const th = document.createElement('th');
             th.textContent = s['項目名稱'] || s['項目'];

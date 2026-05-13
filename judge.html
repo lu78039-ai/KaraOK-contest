@@ -80,5 +80,9 @@
 
     <script src="config.js"></script>
     <script src="judge.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', initJudge);
+        function showView(viewId) { if (viewId === 'homeView') location.href = 'index.html'; }
+    </script>
 </body>
 </html>

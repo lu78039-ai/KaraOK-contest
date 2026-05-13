@@ -1,26 +1,38 @@
-document.addEventListener('DOMContentLoaded', async () => {
+let showJudges = false;
+
+async function initReport() {
     const printDate = document.getElementById('printDate');
+    if (!printDate) return;
     const now = new Date();
     printDate.textContent = `製表時間：${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
     await loadReportData();
 
-    // 顯示/隱藏評審明細切換
-    let showJudges = true;
+    // 顯示/隱藏評審明細切換 (預設隱藏)
     const toggleBtn = document.getElementById('toggleJudgesBtn');
-    toggleBtn.addEventListener('click', () => {
-        showJudges = !showJudges;
-        const judgeCells = document.querySelectorAll('.judge-cell');
-        judgeCells.forEach(cell => {
-            if (showJudges) cell.classList.remove('hidden');
-            else cell.classList.add('hidden');
-        });
-        toggleBtn.innerHTML = showJudges ? '👁️ 隱藏評審明細' : '👁️ 顯示評審明細';
+    if (toggleBtn) {
+        toggleBtn.onclick = () => {
+            showJudges = !showJudges;
+            updateJudgeVisibility(showJudges);
+        };
+    }
+    // 初始由 loadReportData 呼叫更新
+}
+
+function updateJudgeVisibility(visible) {
+    const toggleBtn = document.getElementById('toggleJudgesBtn');
+    const judgeCells = document.querySelectorAll('.judge-cell');
+    judgeCells.forEach(cell => {
+        if (visible) cell.classList.remove('hidden');
+        else cell.classList.add('hidden');
     });
-});
+    if (toggleBtn) {
+        toggleBtn.innerHTML = visible ? '👁️ 隱藏評審明細' : '👁️ 顯示評審明細';
+    }
+}
 
 async function loadReportData() {
-    const loading = document.getElementById('loading');
+    const loading = document.getElementById('loadingReport');
     const tableWrapper = document.getElementById('tableWrapper');
     const headerRow = document.getElementById('headerRow');
     const body = document.getElementById('reportContent');
@@ -35,14 +47,8 @@ async function loadReportData() {
             return;
         }
 
-        // 1. 取得所有出現過的評審姓名，用於動態表頭
-        const judgeNames = new Set();
-        rankings.forEach(r => {
-            if (r.judgeScores) {
-                Object.keys(r.judgeScores).forEach(name => judgeNames.add(name));
-            }
-        });
-        const sortedJudges = Array.from(judgeNames).sort();
+        // 1. 使用後台回傳的完整評審名單，確保未評分的評審也會顯示空格
+        const sortedJudges = (data.judges || []).filter(n => n && n.trim() !== '').sort();
 
         // 2. 建立表頭
         let headerHtml = `
@@ -103,6 +109,7 @@ async function loadReportData() {
 
         loading.classList.add('hidden');
         tableWrapper.classList.remove('hidden');
+        updateJudgeVisibility(showJudges);
 
     } catch (error) {
         console.error(error);

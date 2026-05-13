@@ -102,6 +102,16 @@
         }
         .move-btn:hover { background: #718096; }
         
+        /* 隱藏瀏覽器預設的數字輸入框上下箭頭 */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        
         .member-tag {
             display: inline-block;
             background: #2c5282;
@@ -112,24 +122,8 @@
             font-size: 0.85rem;
         }
 
-        /* 列印樣式 */
-        @media print {
-            body { background: white; color: black; padding: 0; }
-            .admin-container { box-shadow: none; margin: 0; padding: 0; max-width: 100%; width: 100%; }
-            .controls, .move-btn, .order-input { display: none !important; }
-            .admin-container { background: white; }
-            th { background: #eee !important; color: black !important; border: 1px solid #ccc; }
-            td { border: 1px solid #ccc; color: black !important; }
-            /* 置中出場序與報名序號 */
-            th:nth-child(1), td:nth-child(1),
-            th:nth-child(2), td:nth-child(2) {
-                text-align: center !important;
-            }
-            .member-tag { background: none; color: black; border: 1px solid #ddd; }
-            h1 { color: black !important; text-align: center; margin-bottom: 20px; }
-            .print-only-order { display: block !important; }
-        }
-        .print-only-order { display: none; text-align: center; font-weight: bold; }
+        .print-only-order { display: none !important; }
+        h1.print-title { display: none; }
 
         .loading-overlay {
             position: fixed;
@@ -169,12 +163,13 @@
 </head>
 <body>
     <div class="admin-container">
-        <div class="header">
+        <h1 class="print-only-title">🎤 卡拉 OK 大賽參賽名單</h1>
+        <div class="header no-print">
             <div style="display: flex; align-items: center; gap: 15px;">
-                <a href="index.html" style="text-decoration: none; font-size: 1.5rem;" title="返回首頁">🏠</a>
+                <a href="index.html" class="hide-print" style="text-decoration: none; font-size: 1.5rem;" title="返回首頁">🏠</a>
                 <h1>🛡️ 報名隊伍管理</h1>
             </div>
-            <div class="controls">
+            <div class="controls no-print">
                 <button id="lotteryBtn" class="btn btn-warning">🎲 隨機抽籤</button>
                 <button id="sortByOrderBtn" class="btn btn-info">📋 依出場序</button>
                 <button id="sortRegIdBtn" class="btn btn-primary">🔢 依報名序</button>
@@ -188,8 +183,8 @@
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 140px;">出場序 / 調整</th>
-                        <th style="width: 80px;">報名序號</th>
+                        <th style="width: 160px;">出場序 / 調整</th>
+                        <th style="width: 100px; white-space: nowrap;">報名序號</th>
                         <th>隊伍名稱 / 曲目</th>
                         <th>參賽成員 (班級/座號/姓名)</th>
                     </tr>
@@ -209,5 +204,9 @@
 
     <script src="config.js"></script>
     <script src="admin.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', initAdmin);
+        function showView(viewId) { if (viewId === 'homeView') location.href = 'index.html'; }
+    </script>
 </body>
 </html>
