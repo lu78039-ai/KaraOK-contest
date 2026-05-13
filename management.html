@@ -80,10 +80,11 @@
                     <h1>🏆 卡拉 OK 大賽即時排行榜</h1>
                 </div>
                 <div class="header-controls">
-                    <button id="toggleRevealBtn" class="reveal-btn">👁️ 顯示排行</button>
-                    <button id="revealBtn" class="reveal-btn">📢 公布名次</button>
-                    <button id="refreshBtn" class="refresh-btn">🔄 重新整理</button>
-                </div>
+                <button id="toggleRevealBtn" class="nav-btn">👁️ 顯示排行</button>
+                <button id="revealBtn" class="reveal-btn">📢 公佈名次</button>
+                <button id="resetRevealBtn" class="nav-btn" style="background: var(--danger-color); border:none; color:white;" title="重置揭曉狀態">🔄 重置</button>
+                <button onclick="updateUI()" class="refresh-btn">🔄 重新整理</button>
+            </div>
             </header>
             <main class="split-dashboard"><div class="winners-section"><div id="winnersList" class="winners-list"></div></div><div class="schedule-container"><div id="scheduleList1" class="schedule-col"></div></div><div class="schedule-container"><div id="scheduleList2" class="schedule-col"></div></div></main>
         </div>
