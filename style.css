@@ -880,17 +880,31 @@ input[type="range"]::-moz-range-track {
 
 /* 列印樣式 */
 @media print {
-    @page { size: landscape; margin: 1cm; }
+    @page { size: portrait; margin: 1.5cm; }
     body { background: white !important; color: black !important; height: auto !important; overflow: visible !important; }
-    .judge-header, .header-controls, .nav-btn, #backToTeams, .toast, .submit-btn, input[type="range"], .total-preview, .nav-bar, #navBar, .logout-btn, .dashboard-header {
+    
+    /* 隱藏所有功能按鈕、導覽列、Toast 提示 */
+    .judge-header, .header-controls, .nav-btn, #backToTeams, .toast, .submit-btn, 
+    input[type="range"], .total-preview, .nav-bar, #navBar, .logout-btn, .dashboard-header,
+    .no-print, .controls, .header, .btn, .btn-group {
         display: none !important;
     }
-    .judge-container { max-width: 100% !important; padding: 0 !important; height: auto !important; overflow: visible !important; }
-    .scores-table-container { overflow: visible !important; background: white !important; border: none !important; }
+
+    /* 隱藏管理介面中的調整輸入框與箭頭，只顯示純文字 */
+    input[type="number"], .order-input, .btn-sm {
+        display: none !important;
+    }
+
+    .admin-container { max-width: 100% !important; padding: 0 !important; background: white !important; }
+    .admin-container h1 { color: black !important; text-align: center; margin-bottom: 20px; }
+    
     table { width: 100% !important; border-collapse: collapse !important; border: 1px solid #000 !important; }
-    th, td { border: 1px solid #000 !important; color: black !important; padding: 8px !important; }
-    th { background: #eee !important; }
-    .compact-cell { color: #333 !important; }
+    th, td { border: 1px solid #000 !important; color: black !important; padding: 8px !important; background: white !important; }
+    th { background: #f2f2f2 !important; }
+    
+    /* 確保出場序文字可見 */
+    .order-display { display: block !important; }
+    
     tr { page-break-inside: avoid; }
 }
 
