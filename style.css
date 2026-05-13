@@ -883,10 +883,30 @@ input[type="range"]::-moz-range-track {
     @page { size: portrait; margin: 1.5cm; }
     body { background: white !important; color: black !important; height: auto !important; overflow: visible !important; }
     
+    /* 自動隱藏所有非當前活動的視圖 */
+    .view.hidden {
+        display: none !important;
+    }
+    
+    /* 唯獨開啟「當前正在顯示」的視圖容器 */
+    .view:not(.hidden) {
+        display: block !important;
+        background: white !important;
+        padding: 0 !important;
+        height: auto !important;
+        width: 100% !important;
+    }
+
+    .report-container, .admin-container {
+        max-width: 100% !important;
+        padding: 0 !important;
+        background: white !important;
+    }
+
     /* 隱藏所有功能按鈕、導覽列、Toast 提示 */
     .judge-header, .header-controls, .nav-btn, #backToTeams, .toast, .submit-btn, 
     input[type="range"], .total-preview, .nav-bar, #navBar, .logout-btn, .dashboard-header,
-    .no-print, .controls, .header, .btn, .btn-group {
+    .no-print, .controls, .header, .btn, .btn-group, .action-btn, .btn-group {
         display: none !important;
     }
 
