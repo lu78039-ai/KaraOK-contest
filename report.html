@@ -104,7 +104,7 @@
 <body>
     <div class="report-container">
         <div class="btn-group no-print">
-            <a href="index.html" class="action-btn back-btn" style="text-decoration: none;">🏠 返回首頁</a>
+            <a href="management.html" class="action-btn back-btn" style="text-decoration: none;">🏠 返回首頁</a>
             <button id="toggleJudgesBtn" class="action-btn toggle-btn">👁️ 隱藏評審明細</button>
             <button onclick="window.print()" class="action-btn print-btn">🖨️ 列印此表 (A4)</button>
         </div>
@@ -133,7 +133,7 @@
     <script src="report.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', initReport);
-        function showView(viewId) { if (viewId === 'homeView') location.href = 'index.html'; }
+        function showView(viewId) { if (viewId === 'homeView') location.href = 'management.html'; }
     </script>
 </body>
 </html>

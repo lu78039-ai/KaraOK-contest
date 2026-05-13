@@ -32,12 +32,11 @@ function setupNameCheck() {
                     if (data.status === 'found') {
                         const msg = `該學生（${cls}班 ${seat}號 ${name}）已經報名參賽，每個人只能參加一場賽事，你要進入修改資料頁面嗎?`;
                         if (confirm(msg)) {
-                            // 跳轉到修改分頁
+                            // 跳轉到修改分頁，但不帶入資訊以保障個資安全
                             switchRegTab('edit');
-                            document.getElementById('editMemberName').value = name;
-                            // 清空新報名表單中該學生的姓名，避免重複觸發或誤送出
+                            // 清空新報名表單中該學生的姓名，避免重複觸發
                             row.querySelector('.m-name').value = '';
-                            showToast("請輸入報名序號以驗證身分");
+                            showToast("請手動輸入報名序號與姓名進行驗證");
                         } else {
                             // 如果不修改，則清空該行避免重複報名
                             row.querySelector('.m-name').value = '';

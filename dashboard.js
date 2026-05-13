@@ -31,7 +31,8 @@ function initDashboard() {
     if (revealBtn) {
         revealBtn.onclick = () => {
             if (isGlobalReveal) { alert('目前已設定為全域顯示。'); return; }
-            if (revealCount < 5) { revealCount++; updateUI(); }
+            const maxAward = currentRankingsData ? currentRankingsData.awardCount : 3;
+            if (revealCount < maxAward) { revealCount++; updateUI(); }
             else { alert('名次已全部公布！'); }
         };
     }
@@ -99,18 +100,17 @@ function renderDashboard(data) {
         return;
     }
 
-    // 1. 處理前五名 (Winners List)
-    const top5 = rankings.slice(0, 5);
-    top5.forEach((item, index) => {
+    // 1. 處理頒獎名額 (Winners List)
+    const awardCount = data.awardCount || 3;
+    const winners = rankings.slice(0, awardCount);
+    winners.forEach((item, index) => {
         const rank = index + 1;
-        const isHidden = !isGlobalReveal && (revealCount < (5 - index));
+        // 揭曉邏輯：從最後一名往前公佈。例如 3 名：第 1 次公佈第 3 名, 第 2 次公佈第 2 名, 第 3 次公佈第 1 名
+        const isHidden = !isGlobalReveal && (revealCount < (awardCount - index));
         const card = document.createElement('div');
         card.className = `podium-card rank-${rank <= 3 ? rank : 'other'} ${isHidden ? 'is-hidden' : ''}`;
         
-        let medal = '⭐';
-        if (rank === 1) medal = '🥇';
-        if (rank === 2) medal = '🥈';
-        if (rank === 3) medal = '🥉';
+        let medal = rank <= 3 ? ['🥇', '🥈', '🥉'][rank-1] : '⭐';
 
         card.innerHTML = `
             ${isHidden ? '<div class="podium-mask"></div>' : ''}

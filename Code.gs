@@ -26,8 +26,13 @@ function setup() {
     configSheet.appendRow(['設定項目', '值']);
     configSheet.appendRow(['報名截止時間', '2026-12-31 23:59']);
     configSheet.appendRow(['顯示 4 名後分數', 'FALSE']);
-    // 設定 B2 (報名截止時間的值) 為日期時間格式
+    configSheet.appendRow(['頒獎名額', '3']);
     configSheet.getRange("B2").setNumberFormat("yyyy/MM/dd HH:mm");
+  } else {
+    // 確保現有工作表也有新欄位
+    const cfgData = configSheet.getDataRange().getValues();
+    const keys = cfgData.map(r => r[0]);
+    if (!keys.includes('頒獎名額')) configSheet.appendRow(['頒獎名額', '3']);
   }
   
   // 建立學生資料工作表
@@ -330,6 +335,7 @@ function getRankingsData() {
 
   const config = getSheetData('Config');
   const showOthersScore = config.find(c => c['設定項目'] === '顯示 4 名後分數')?.['值'] === 'TRUE';
+  const awardCount = parseInt(config.find(c => c['設定項目'] === '頒獎名額')?.['值']) || 3;
 
-  return { judges, rankings, fullList, adminData: Object.values(adminDataMap), showOthersScore };
+  return { judges, rankings, fullList, adminData: Object.values(adminDataMap), showOthersScore, awardCount };
 }

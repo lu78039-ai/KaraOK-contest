@@ -51,8 +51,8 @@
     *   開啟 GitHub Pages 功能，獲取正式網址。
 
 ## 📂 檔案清單說明
-*   `index.html`: 工作人員與評審的主入口。
-*   `register.html`: 學生報名與資料修改的獨立頁面。
+*   `management.html`: 工作人員與評審的主入口 (隱藏網址，請妥善保管)。
+*   `index.html`: 學生報名與資料修改的門戶頁面 (根目錄預設路徑)。
 *   `report.html`: 成績列印專用頁面。
 *   `style.css`: 統一的現代化深色 UI 樣式表。
 *   `config.js`: 全域配置。

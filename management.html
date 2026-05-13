@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卡拉OK大賽評分系統</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="config.js"></script>
+</head>
+<body>
+    <!-- 主視圖：首頁入口 -->
+    <div id="homeView" class="container view">
+        <header>
+            <h1>卡拉 OK 大賽評分系統</h1>
+            <p style="font-size: 1.2rem; color: var(--text-muted);">請選擇您要進入的系統模式</p>
+        </header>
+        
+        <div class="menu-grid">
+            <div onclick="showView('judgeView')" class="menu-card" style="border-top: 4px solid #3182CE; cursor: pointer;">
+                <div class="icon" style="font-size: 3rem;">⚖️</div>
+                <h2 style="font-size: 1.8rem; margin: 10px 0;">評審評分</h2>
+                <p style="color: var(--text-muted);">評審員登入並進行即時評分</p>
+            </div>
+            <div onclick="showView('dashboardView')" class="menu-card" style="border-top: 4px solid #38A169; cursor: pointer;">
+                <div class="icon" style="font-size: 3rem;">📊</div>
+                <h2 style="font-size: 1.8rem; margin: 10px 0;">成績看板</h2>
+                <p style="color: var(--text-muted);">即時排名與名次公佈</p>
+            </div>
+            <div onclick="showView('adminView')" class="menu-card" style="border-top: 4px solid #DD6B20; cursor: pointer;">
+                <div class="icon" style="font-size: 3rem;">🛡️</div>
+                <h2 style="font-size: 1.8rem; margin: 10px 0;">管理系統</h2>
+                <p style="color: var(--text-muted);">抽籤、出場序調整與報名管理</p>
+            </div>
+            <div onclick="showView('reportView')" class="menu-card" style="border-top: 4px solid #A78BFA; cursor: pointer;">
+                <div class="icon" style="font-size: 3rem;">📜</div>
+                <h2 style="font-size: 1.8rem; margin: 10px 0;">總分明細表</h2>
+                <p style="color: var(--text-muted);">查看與列印全場評分明細</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 視圖：評審介面 -->
+    <div id="judgeView" class="view hidden">
+        <div id="loginSection" class="container">
+            <div class="login-box">
+                <div onclick="showView('homeView')" style="cursor:pointer; margin-bottom:10px;">🏠 返回</div>
+                <h2>🔑 評審登入</h2>
+                <form id="loginForm">
+                    <div class="form-group"><label>評審姓名</label><select id="username" required><option value="">載入名單中...</option></select></div>
+                    <div class="form-group"><label>登入密碼</label><input type="password" id="password" required></div>
+                    <button type="submit" class="submit-btn">登入系統</button>
+                </form>
+            </div>
+        </div>
+        <div id="judgeApp" class="judge-container hidden">
+            <header class="judge-header">
+                <div style="display:flex; align-items:center; gap:10px; flex: 1;">
+                    <button id="backToTeams" class="back-btn hidden">←</button>
+                    <h2 id="viewTitle">今日比賽隊伍</h2>
+                    <select id="scoringQuickJump" class="hidden"></select>
+                </div>
+                <div class="header-controls" id="judgeHeaderInfo">
+                    <span id="currentJudgeDisplay"></span>
+                    <button id="logoutBtn" class="nav-btn">登出</button>
+                </div>
+            </header>
+            <div id="teamListView" class="scores-table-container"><table><thead><tr id="teamListHeader"><th>出場序 / 隊伍</th><th>總分</th><th>操作</th></tr></thead><tbody id="teamListBody"></tbody></table></div>
+            <div id="scoringView" class="hidden"><form id="scoreForm" class="score-form"><div class="criteria-grid" id="criteriaGrid"></div><div class="scoring-footer"><div class="total-preview"><h3>加權總分</h3><span id="previewTotal">0</span></div><button type="submit" class="submit-btn" id="submitBtn">送出評分</button></div></form></div>
+        </div>
+    </div>
+
+    <!-- 視圖：成績看板 -->
+    <div id="dashboardView" class="view hidden">
+        <div class="dashboard-container">
+            <header class="dashboard-header">
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <div onclick="showView('homeView')" style="cursor: pointer; font-size: 1.8rem;" title="返回首頁">🏠</div>
+                    <h1>🏆 卡拉 OK 大賽即時排行榜</h1>
+                </div>
+                <div class="header-controls">
+                    <button id="toggleRevealBtn" class="reveal-btn">👁️ 顯示排行</button>
+                    <button id="revealBtn" class="reveal-btn">📢 公布名次</button>
+                    <button id="refreshBtn" class="refresh-btn">🔄 重新整理</button>
+                </div>
+            </header>
+            <main class="split-dashboard"><div class="winners-section"><div id="winnersList" class="winners-list"></div></div><div class="schedule-container"><div id="scheduleList1" class="schedule-col"></div></div><div class="schedule-container"><div id="scheduleList2" class="schedule-col"></div></div></main>
+        </div>
+    </div>
+
+    <div id="adminView" class="view hidden" style="background-color: #1a1c23; padding: 20px; overflow: auto; height: 100vh;">
+        <div class="admin-container">
+            <h1 class="print-only-title">🎤 卡拉 OK 大賽參賽名單</h1>
+            <div class="header no-print">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div onclick="showView('homeView')" style="cursor: pointer; font-size: 1.5rem;" title="返回首頁">🏠</div>
+                    <h1 style="color: #63b3ed; font-size: 1.8rem; font-weight: bold;">🛡️ 報名隊伍管理</h1>
+                </div>
+                <div class="controls no-print">
+                    <button id="lotteryBtn" class="btn btn-warning">🎲 隨機抽籤</button>
+                    <button id="sortByOrderBtn" class="btn btn-info">📋 依出場序</button>
+                    <button id="sortRegIdBtn" class="btn btn-primary">🔢 依報名序</button>
+                    <button id="printBtn" class="btn btn-info">🖨️ 列印表單</button>
+                    <button id="saveBtn" class="btn btn-success">💾 儲存變更</button>
+                    <button id="refreshBtn" class="btn btn-primary">🔄 刷新</button>
+                </div>
+            </div>
+            <div id="tableContainer">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 160px;">出場序 / 調整</th>
+                            <th style="width: 100px; white-space: nowrap;">報名序號</th>
+                            <th>隊伍名稱 / 曲目</th>
+                            <th>參賽成員 (班級/座號/姓名)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 視圖：報表列印 -->
+    <div id="reportView" class="view hidden" style="background: #1a1c1e; padding: 40px 20px; overflow: auto; height: 100vh;">
+        <div class="report-container">
+            <div class="btn-group no-print">
+                <div onclick="showView('homeView')" class="action-btn back-btn" style="cursor:pointer;">🏠 返回首頁</div>
+                <button id="toggleJudgesBtn" class="action-btn toggle-btn">👁️ 隱藏評審明細</button>
+                <button onclick="window.print()" class="action-btn print-btn">🖨️ 列印此表 (A4)</button>
+            </div>
+            
+            <div class="report-header">
+                <h1>卡拉 OK 大賽 - 總成績評分明細表</h1>
+                <p id="printDate" style="color: var(--text-muted); margin-top: 10px;"></p>
+            </div>
+
+            <div id="loadingReport" style="text-align: center; padding: 40px; font-size: 1.2rem;">正在彙整成績資料...</div>
+            
+            <div id="tableWrapper" class="hidden">
+                <table id="reportTable">
+                    <thead>
+                        <tr id="headerRow"></tr>
+                    </thead>
+                    <tbody id="reportContent"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    <div id="loadingOverlay" class="loading-overlay"><div class="loading-spinner"></div></div>
+
+    <script src="judge.js"></script>
+    <script src="dashboard.js"></script>
+    <script src="admin.js"></script>
+    <script src="report.js"></script>
+    <script>
+        function showView(viewId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+            const target = document.getElementById(viewId);
+            if (target) {
+                target.classList.remove('hidden');
+                
+                // Theme management
+                document.body.classList.remove('register-page');
+                
+                // Lazy initialization
+                if (viewId === 'judgeView' && typeof initJudge === 'function') initJudge();
+                if (viewId === 'dashboardView' && typeof initDashboard === 'function') initDashboard();
+                if (viewId === 'adminView' && typeof initAdmin === 'function') initAdmin();
+                if (viewId === 'reportView' && typeof initReport === 'function') initReport();
+            }
+            window.scrollTo(0, 0);
+        }
+
+        // Global toast helper for all modules
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast show ${isError ? 'error' : ''}`;
+            if (isError) toast.classList.add('toast-error');
+            else toast.classList.add('toast-success');
+            setTimeout(() => toast.className = 'toast', 3000);
+        }
+
+        // Handle URL params for direct access if needed
+        window.onload = () => {
+            const params = new URLSearchParams(window.location.search);
+            const view = params.get('view');
+            if (view) showView(view + 'View');
+        };
+    </script>
+</body>
+</html>
