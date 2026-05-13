@@ -80,17 +80,17 @@
                         報名序號：<span id="editRegIdDisplay"></span>
                     </div>
                     <div class="form-group">
+                        <label>參賽成員名單</label>
+                        <div id="editMembersContainer"></div>
+                        <button type="button" class="nav-btn" style="width:auto; padding:8px 16px; margin-top:10px;" onclick="addMemberFieldToEdit()">＋ 新增成員</button>
+                    </div>
+
+                    <div class="form-group" style="margin-top:20px;">
                         <label>隊伍名稱</label>
                         <input type="text" id="editTeamName" required>
                     </div>
                     <div class="form-group"><label>新曲目名稱</label><input type="text" id="editSong" required></div>
                     <div class="form-group"><label>新影片連結</label><input type="url" id="editVideo" placeholder="https://..."></div>
-                    
-                    <div class="form-group" style="margin-top:20px;">
-                        <label>參賽成員名單</label>
-                        <div id="editMembersContainer"></div>
-                        <button type="button" class="nav-btn" style="width:auto; padding:8px 16px; margin-top:10px;" onclick="addMemberFieldToEdit()">＋ 新增成員</button>
-                    </div>
 
                     <button type="button" class="submit-btn" onclick="submitFullRegistrationUpdate()" style="margin-top:20px;">確認修改資料</button>
                 </div>
