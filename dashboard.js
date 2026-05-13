@@ -1,39 +1,43 @@
 let currentRankingsData = null;
 let scheduleOffset = 0;
-let revealCount = 0; // 控制公布名次進度 (0-5)
-let isGlobalReveal = false; // 是否全域顯示排行 (不使用遮罩)
+let revealCount = 0; // 控制公布名次進度
 const ROWS_PER_COL = 9; // 每欄顯示的隊伍數
 const itemsToDisplay = ROWS_PER_COL * 2; // 一個畫面總共顯示 18 隊
 
 function initDashboard() {
+    revealCount = 0; // 每次進入看板都重置進度
     fetchRankings();
     
     // 按鈕綁定
     const refreshBtn = document.getElementById('refreshBtn');
     if (refreshBtn) refreshBtn.onclick = fetchRankings;
     
-    const toggleRevealBtn = document.getElementById('toggleRevealBtn');
-    if (toggleRevealBtn) {
-        toggleRevealBtn.onclick = (e) => {
-            if (!isGlobalReveal && revealCount > 0) {
-                revealCount = 0;
-                updateUI();
-                return;
-            }
-            isGlobalReveal = !isGlobalReveal;
-            e.target.textContent = isGlobalReveal ? '🔒 隱藏排行' : '👁️ 顯示排行';
-            if (!isGlobalReveal) revealCount = 0;
-            updateUI();
-        };
-    }
 
     const revealBtn = document.getElementById('revealBtn');
     if (revealBtn) {
         revealBtn.onclick = () => {
-            if (isGlobalReveal) { alert('目前已設定為全域顯示。'); return; }
-            const maxAward = currentRankingsData ? currentRankingsData.awardCount : 3;
-            if (revealCount < maxAward) { revealCount++; updateUI(); }
-            else { alert('名次已全部公布！'); }
+            // 確保 maxAward 至少為 3，防止因 undefined 導致判斷失效
+            let maxAward = 3;
+            if (currentRankingsData && typeof currentRankingsData.awardCount !== 'undefined') {
+                maxAward = parseInt(currentRankingsData.awardCount);
+            }
+            
+            if (revealCount < maxAward) { 
+                revealCount++; 
+                updateUI(); 
+            } else { 
+                alert('名次已全部公布！'); 
+            }
+        };
+    }
+
+    const resetRevealBtn = document.getElementById('resetRevealBtn');
+    if (resetRevealBtn) {
+        resetRevealBtn.onclick = () => {
+            if (confirm('確定要重置揭曉狀態嗎？所有名次將重新被遮蓋。')) {
+                revealCount = 0;
+                updateUI();
+            }
         };
     }
 
@@ -101,16 +105,27 @@ function renderDashboard(data) {
     }
 
     // 1. 處理頒獎名額 (Winners List)
-    const awardCount = data.awardCount || 3;
+    // 1. 處理頒獎名額 (Winners List)
+    // 讀取設定並限制在 1~5 名之間
+    let awardCount = parseInt(data.awardCount) || 3;
+    awardCount = Math.min(Math.max(awardCount, 1), 5);
+    
+    // 更新按鈕文字顯示進度
+    const revealBtn = document.getElementById('revealBtn');
+    if (revealBtn) {
+        revealBtn.innerHTML = revealCount >= awardCount ? `📢 全部名次已公佈` : `📢 公佈名次 (${revealCount}/${awardCount})`;
+    }
+
     const winners = rankings.slice(0, awardCount);
     winners.forEach((item, index) => {
-        const rank = index + 1;
-        // 揭曉邏輯：從最後一名往前公佈。例如 3 名：第 1 次公佈第 3 名, 第 2 次公佈第 2 名, 第 3 次公佈第 1 名
-        const isHidden = !isGlobalReveal && (revealCount < (awardCount - index));
+        // 增加容錯：如果後端尚未更新 rank，則以 index+1 代替
+        const displayRank = item.rank || (index + 1);
+        // 揭曉邏輯：從最後一名往前公佈。
+        const isHidden = revealCount < (awardCount - index);
         const card = document.createElement('div');
-        card.className = `podium-card rank-${rank <= 3 ? rank : 'other'} ${isHidden ? 'is-hidden' : ''}`;
+        card.className = `podium-card rank-${displayRank <= 3 ? displayRank : 'other'} ${isHidden ? 'is-hidden' : ''}`;
         
-        let medal = rank <= 3 ? ['🥇', '🥈', '🥉'][rank-1] : '⭐';
+        let medal = displayRank <= 3 ? (['🥇', '🥈', '🥉'][displayRank-1] || '⭐') : '⭐';
 
         card.innerHTML = `
             ${isHidden ? '<div class="podium-mask"></div>' : ''}
@@ -140,8 +155,9 @@ function renderDashboard(data) {
             list.forEach(item => {
                 const row = document.createElement('div');
                 row.className = 'schedule-row';
+                const teamRank = item.rank || '-';
                 row.innerHTML = `
-                    <div class="s-badge">${item.order || '-'}</div>
+                    <div class="s-badge">${teamRank}</div>
                     <div class="s-content">
                         <div class="s-main">
                             <span class="s-team">${item.teamName || '未具名隊伍'}</span>
